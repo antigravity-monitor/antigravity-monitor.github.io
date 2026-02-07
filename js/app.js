@@ -17,7 +17,14 @@ const el = {
   settingsBtn: document.getElementById("settingsBtn"),
 
   heroSignInBtn: document.getElementById("heroSignInBtn"),
+  manualTokenBtn: document.getElementById("manualTokenBtn"),
   heroNextRefresh: document.getElementById("heroNextRefresh"),
+
+  manualTokenModal: document.getElementById("manualTokenModal"),
+  manualTokenBackdrop: document.getElementById("manualTokenBackdrop"),
+  manualTokenCloseBtn: document.getElementById("manualTokenCloseBtn"),
+  saveManualTokenBtn: document.getElementById("saveManualTokenBtn"),
+  manualTokenInput: document.getElementById("manualTokenInput"),
 
   settingsModal: document.getElementById("settingsModal"),
   settingsBackdrop: document.getElementById("settingsBackdrop"),
@@ -373,6 +380,31 @@ function signOut() {
   setStatus("Signed out", { kind: "idle" });
 }
 
+function showManualTokenModal(show) {
+  el.manualTokenModal.classList.toggle("hidden", !show);
+  if (show) el.manualTokenInput.focus();
+}
+
+function saveManualToken() {
+  const token = el.manualTokenInput.value.trim();
+  if (!token) return;
+  
+  saveToken({
+    access_token: token,
+    token_type: "Bearer",
+    scope: "",
+    expires_at: Math.floor(Date.now() / 1000) + 3600, // assume 1h
+    obtained_at: Math.floor(Date.now() / 1000),
+  });
+  
+  showManualTokenModal(false);
+  state.accessToken = token;
+  setSignedInUi(true);
+  scheduleRefresh();
+  scheduleCountdowns();
+  runRefresh({ reason: "manual" }).catch((e) => setError(e));
+}
+
 function attachEvents() {
   el.settingsBtn.addEventListener("click", () => showModal(true));
   el.settingsCloseBtn.addEventListener("click", () => showModal(false));
@@ -409,6 +441,10 @@ function attachEvents() {
       if (String(e.message || "").toLowerCase().includes("client id")) showModal(true);
     });
   });
+  el.manualTokenBtn.addEventListener("click", () => showManualTokenModal(true));
+  el.manualTokenCloseBtn.addEventListener("click", () => showManualTokenModal(false));
+  el.manualTokenBackdrop.addEventListener("click", () => showManualTokenModal(false));
+  el.saveManualTokenBtn.addEventListener("click", saveManualToken);
 
   el.refreshBtn.addEventListener("click", () => {
     runRefresh({ reason: "manual" }).catch((e) => setError(e));
