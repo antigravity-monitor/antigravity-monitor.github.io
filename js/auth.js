@@ -37,9 +37,6 @@ export async function waitForGsi({ timeoutMs = 8000 } = {}) {
 
 export async function requestAccessToken({ prompt = "consent" } = {}) {
   const settings = loadSettings();
-  if (!settings.clientId) {
-    throw new Error("Missing OAuth Client ID. Open Settings and provide one.");
-  }
 
   await waitForGsi();
 

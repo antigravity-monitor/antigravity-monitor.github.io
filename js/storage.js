@@ -3,8 +3,8 @@ const TOKEN_KEY = "ag_monitor_token_v1";
 
 export function loadSettings() {
   const defaults = {
-    clientId: "",
-    scopes: "openid email profile https://www.googleapis.com/auth/cloud-platform",
+    clientId: "1071006060591-tmhssin2h21lcre235vtolojh4g403ep.apps.googleusercontent.com",
+    scopes: "https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
     duetProject: "rising-fact-p41fc",
     quotaProject: "",
     hostMode: "auto", // auto | primary | daily
