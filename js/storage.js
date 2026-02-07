@@ -15,7 +15,11 @@ export function loadSettings() {
     const raw = localStorage.getItem(KEY);
     if (!raw) return defaults;
     const parsed = JSON.parse(raw);
-    return { ...defaults, ...parsed };
+    const merged = { ...defaults, ...parsed };
+    // Ensure critical fields are never empty (overrides stale localStorage)
+    if (!merged.clientId) merged.clientId = defaults.clientId;
+    if (!merged.scopes) merged.scopes = defaults.scopes;
+    return merged;
   } catch {
     return defaults;
   }
