@@ -3,6 +3,7 @@ import {
   getAccessTokenInteractive,
   getAccessTokenSilentIfPossible,
   clearStoredToken,
+  handleOAuthRedirect,
 } from "./auth.js";
 import { fetchAvailableModels, fetchSubscriptionTier, fetchUserInfo } from "./api.js";
 import { buildQuotaRow, tierBadgeEl, updateCountdowns, formatClock } from "./ui.js";
@@ -16,7 +17,6 @@ const el = {
   settingsBtn: document.getElementById("settingsBtn"),
 
   heroSignInBtn: document.getElementById("heroSignInBtn"),
-  heroOpenSettingsBtn: document.getElementById("heroOpenSettingsBtn"),
   heroNextRefresh: document.getElementById("heroNextRefresh"),
 
   settingsModal: document.getElementById("settingsModal"),
@@ -409,7 +409,6 @@ function attachEvents() {
       if (String(e.message || "").toLowerCase().includes("client id")) showModal(true);
     });
   });
-  el.heroOpenSettingsBtn.addEventListener("click", () => showModal(true));
 
   el.refreshBtn.addEventListener("click", () => {
     runRefresh({ reason: "manual" }).catch((e) => setError(e));
@@ -423,6 +422,9 @@ function attachEvents() {
 }
 
 async function bootstrap() {
+  // Handle OAuth redirect (token in URL hash)
+  handleOAuthRedirect();
+
   attachEvents();
   syncSettingsToForm();
   scheduleCountdowns();
