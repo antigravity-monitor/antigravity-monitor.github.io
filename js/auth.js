@@ -68,12 +68,18 @@ export function handleOAuthRedirect() {
 function buildAuthUrl(settings) {
   // Normalize redirect_uri to match typical GCP whitelists:
   // - strip trailing "index.html"
-  // - strip trailing "/" (including the one left after removing index.html)
+  // - ensure root path is exactly "/"
+  // - otherwise, strip any trailing "/" (e.g. "/repo/" -> "/repo")
   let path = window.location.pathname || "";
   if (path.endsWith("index.html")) {
     path = path.slice(0, -("index.html".length));
   }
-  if (path.endsWith("/")) {
+
+  // After stripping index.html, treat empty and "/" as the site root.
+  // This matches GitHub Pages/GCP redirect URI expectations (origin + "/").
+  if (path === "" || path === "/") {
+    path = "/";
+  } else if (path.endsWith("/")) {
     path = path.slice(0, -1);
   }
 
