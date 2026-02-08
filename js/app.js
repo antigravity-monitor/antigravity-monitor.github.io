@@ -458,13 +458,19 @@ function attachEvents() {
 }
 
 async function bootstrap() {
-  // Handle OAuth redirect (token in URL hash)
-  handleOAuthRedirect();
+  // Handle OAuth redirect (exchange code for token via PKCE)
+  const wasRedirect = await handleOAuthRedirect();
 
   attachEvents();
   syncSettingsToForm();
   scheduleCountdowns();
   scheduleRefresh();
+
+  // If we just completed OAuth, trigger a refresh immediately
+  if (wasRedirect) {
+    await refresh(true);
+    return;
+  }
 
   // If we have a stored token, try a refresh immediately; otherwise show hero.
   const t = loadToken();
