@@ -84,8 +84,6 @@ function buildAuthUrl(settings) {
   }
 
   const redirectUri = window.location.origin + path;
-  // Debug: show the exact redirect_uri being sent to Google (helps diagnose mismatch).
-  alert(redirectUri);
   const params = new URLSearchParams({
     client_id: settings.clientId,
     redirect_uri: redirectUri,
