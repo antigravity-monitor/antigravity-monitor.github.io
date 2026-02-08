@@ -66,7 +66,18 @@ export function handleOAuthRedirect() {
  * Build the Google OAuth2 authorization URL for implicit flow.
  */
 function buildAuthUrl(settings) {
-  const redirectUri = window.location.origin + window.location.pathname;
+  // Normalize redirect_uri to match typical GCP whitelists:
+  // - strip trailing "index.html"
+  // - strip trailing "/" (including the one left after removing index.html)
+  let path = window.location.pathname || "";
+  if (path.endsWith("index.html")) {
+    path = path.slice(0, -("index.html".length));
+  }
+  if (path.endsWith("/")) {
+    path = path.slice(0, -1);
+  }
+
+  const redirectUri = window.location.origin + path;
   const params = new URLSearchParams({
     client_id: settings.clientId,
     redirect_uri: redirectUri,
